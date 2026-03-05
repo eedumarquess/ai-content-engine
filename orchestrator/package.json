@@ -6,6 +6,10 @@
   "packageManager": "pnpm@10.5.2",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "db:migrate": "node dist/database/cli/migrate.js",
+    "db:seed": "node dist/database/cli/seed.js",
+    "db:bootstrap": "node dist/database/cli/bootstrap.js",
+    "db:verify": "node dist/database/cli/verify.js",
     "start": "node dist/main.js",
     "start:prod": "node dist/main.js"
   },
