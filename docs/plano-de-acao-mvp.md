@@ -125,12 +125,12 @@ Subir todo o ambiente local do MVP com Docker e garantir comunicacao entre todos
 
 #### Passos
 
-- [ ] criar `docker-compose` com os servicos base
-- [ ] definir variaveis de ambiente de banco, fila, auth, models e embeddings
-- [ ] garantir extensoes `vector` e `pgcrypto` no Postgres
-- [ ] garantir conectividade entre NestJS, RabbitMQ, Ollama e workers
-- [ ] preparar script ou etapa de bootstrap para baixar `qwen2.5:7b`, `qwen2.5:3b` e `nomic-embed-text`
-- [ ] documentar como provisionar o reranker local
+- [x] criar `docker-compose` com os servicos base
+- [x] definir variaveis de ambiente de banco, fila, auth, models e embeddings
+- [x] garantir extensoes `vector` e `pgcrypto` no Postgres
+- [x] garantir conectividade entre NestJS, RabbitMQ, Ollama e workers
+- [x] preparar script ou etapa de bootstrap para baixar `qwen2.5:7b`, `qwen2.5:3b` e `nomic-embed-text`
+- [x] documentar como provisionar o reranker local
 
 #### Criterio de pronto
 
@@ -152,24 +152,26 @@ Criar a base de dados do MVP com multi-tenant, memoria RAG, pipeline presets e r
 
 #### Passos
 
-- [ ] criar tabela `users` com suporte a autenticacao basica
-- [ ] criar tabela `pipeline_presets`
-- [ ] criar tabela `generations`
-- [ ] criar tabela `generation_steps`
-- [ ] criar tabela `rag_documents`
-- [ ] criar tabela `llm_traces`
-- [ ] criar tabela `generation_costs`
-- [ ] criar tabela `performance_events`
-- [ ] adicionar indices para `doc_type`, `platform`, `user_id`, `tags` e `embedding`
-- [ ] criar seed com docs de `knowledge`
-- [ ] criar seed com docs de `persona`
-- [ ] criar seed com um preset `content_review_v1`
+- [x] criar tabela `users` com suporte a autenticacao basica
+- [x] criar tabela `pipeline_presets`
+- [x] criar tabela `generations`
+- [x] criar tabela `generation_steps`
+- [x] criar tabela `rag_documents`
+- [x] criar tabela `llm_traces`
+- [x] criar tabela `generation_costs`
+- [x] criar tabela `performance_events`
+- [x] adicionar indices para `doc_type`, `platform`, `user_id`, `tags` e `embedding`
+- [x] criar seed com docs de `knowledge`
+- [x] criar seed com docs de `persona`
+- [x] criar seed com um preset `content_review_v1`
 
 #### Criterio de pronto
 
 - banco sobe com todas as tabelas e indices
 - existe isolamento basico por usuario
 - existe um preset de pipeline selecionavel pela API
+
+Status: concluido na implementacao atual, com `db-bootstrap`, preset global `content_review_v1` e isolamento por aplicacao baseado em `user_id`.
 
 ### Parte 3 - Contrato global e endpoints do MVP
 
@@ -502,8 +504,8 @@ Validar o fluxo completo com a arquitetura real do MVP.
 
 ### Bloco 1 - Fundacao
 
-- [ ] Parte 1 - Infra local e ambiente de execucao
-- [ ] Parte 2 - Banco, autenticacao e persistencia base
+- [x] Parte 1 - Infra local e ambiente de execucao
+- [x] Parte 2 - Banco, autenticacao e persistencia base
 - [ ] Parte 3 - Contrato global e endpoints do MVP
 
 ### Bloco 2 - Core do sistema

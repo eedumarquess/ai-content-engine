@@ -6,6 +6,7 @@ Esta etapa sobe a base executavel do AI Content Engine em Docker Desktop, com Po
 
 - [Indice da documentacao](./README.md)
 - [Resumo das alteracoes da Parte 1](./parte-1-alteracoes.md)
+- [Resumo das alteracoes da Parte 2](./parte-2-alteracoes.md)
 - [Plano do MVP](./plano-de-acao-mvp.md)
 
 ## Pre-requisitos
@@ -30,6 +31,8 @@ docker compose up --build -d
 
 O primeiro bootstrap pode demorar varios minutos porque `ollama-model-init` vai baixar `qwen2.5:7b`, `qwen2.5:3b` e `nomic-embed-text`.
 
+Depois que os modelos estiverem prontos, o servico one-shot `db-bootstrap` aplica migrations, cria o admin bootstrap, seeda `persona`, `knowledge` e `content_review_v1`, gera embeddings reais e valida o resultado antes de liberar `orchestrator` e workers.
+
 ## Subida com GPU opcional
 
 ```powershell
@@ -42,10 +45,27 @@ Use esse fluxo apenas quando o host suportar passthrough de GPU para Docker.
 
 ```powershell
 docker compose ps
+docker compose logs db-bootstrap
 curl.exe http://localhost:3000/health/live
 curl.exe http://localhost:3000/health/ready
 curl.exe http://localhost:11434/api/tags
 docker compose exec postgres psql -U app -d ai_content_engine -c "\dx"
+docker compose exec postgres psql -U app -d ai_content_engine -c "SELECT id, name, is_active FROM pipeline_presets;"
+docker compose exec postgres psql -U app -d ai_content_engine -c "SELECT doc_type, COUNT(*) FROM rag_documents GROUP BY doc_type;"
+```
+
+## Comandos manuais do banco
+
+Se quiser rerodar apenas a etapa de banco depois do build do `orchestrator`:
+
+```powershell
+docker compose run --rm db-bootstrap
+```
+
+Para validar manualmente o bootstrap dentro do `orchestrator`:
+
+```powershell
+docker compose run --rm orchestrator node dist/database/cli/verify.js
 ```
 
 ## RabbitMQ management
@@ -67,6 +87,14 @@ Esse passo nao faz parte do criterio minimo de pronto da Parte 1, mas evita o pr
 ## Warm restart
 
 Depois da primeira subida, os modelos Ollama ficam no volume `ollama_data`. Um novo `docker compose up -d` nao deve baixar tudo de novo.
+
+As migrations e os seeds continuam idempotentes. Se voce recriar apenas o `db-bootstrap`, ele nao deve duplicar dados.
+
+## Dados seedados
+
+- O usuario admin bootstrap usa `AUTH_BOOTSTRAP_ADMIN_EMAIL` e `AUTH_BOOTSTRAP_ADMIN_PASSWORD`
+- Os documentos seedados de `persona` e `knowledge` pertencem a esse usuario e nao sao globais
+- O preset global `content_review_v1` fica disponivel para qualquer usuario autenticado via UUID fixo `c7d7f8a1-5e54-4fb3-9a9a-0c0a9fd0f7d1`
 
 ## Falhas esperadas
 
