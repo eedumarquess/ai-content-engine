@@ -1,0 +1,237 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  rabbitmq:
+    image: rabbitmq:4.2-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+    ports:
+      - "${RABBITMQ_AMQP_HOST_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_HOST_PORT:-15672}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    healthcheck:
+      test:
+        - CMD
+        - rabbitmq-diagnostics
+        - -q
+        - ping
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  ollama:
+    image: ollama/ollama
+    restart: unless-stopped
+    command:
+      - serve
+    ports:
+      - "${OLLAMA_HOST_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test:
+        - CMD
+        - ollama
+        - list
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 20s
+
+  ollama-model-init:
+    image: ollama/ollama
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: ${OLLAMA_BASE_URL}
+      OLLAMA_MAIN_MODEL: ${OLLAMA_MAIN_MODEL}
+      OLLAMA_REPAIR_MODEL: ${OLLAMA_REPAIR_MODEL}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL}
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./infra/ollama/bootstrap/pull-models.sh:/pull-models.sh:ro
+    entrypoint:
+      - /bin/sh
+      - /pull-models.sh
+
+  orchestrator:
+    build:
+      context: ./orchestrator
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      ollama-model-init:
+        condition: service_completed_successfully
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      ORCHESTRATOR_PORT: ${ORCHESTRATOR_PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      AMQP_URL: ${AMQP_URL}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      OLLAMA_MAIN_MODEL: ${OLLAMA_MAIN_MODEL}
+      OLLAMA_REPAIR_MODEL: ${OLLAMA_REPAIR_MODEL}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL}
+      CONTENT_RPC_QUEUE: ${CONTENT_RPC_QUEUE}
+      REVIEW_RPC_QUEUE: ${REVIEW_RPC_QUEUE}
+      STEP_DLQ_QUEUE: ${STEP_DLQ_QUEUE}
+    ports:
+      - "${ORCHESTRATOR_HOST_PORT:-3000}:3000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - node -e "fetch('http://127.0.0.1:3000/health/ready').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  content-worker:
+    build:
+      context: ./agents
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      ollama-model-init:
+        condition: service_completed_successfully
+    command:
+      - python
+      - -m
+      - content_agent.main
+    environment:
+      PYTHON_ENV: ${PYTHON_ENV}
+      AGENT_NAME: content
+      DATABASE_URL: ${DATABASE_URL}
+      AMQP_URL: ${AMQP_URL}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      OLLAMA_MAIN_MODEL: ${OLLAMA_MAIN_MODEL}
+      OLLAMA_REPAIR_MODEL: ${OLLAMA_REPAIR_MODEL}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL}
+      CONTENT_RPC_QUEUE: ${CONTENT_RPC_QUEUE}
+      REVIEW_RPC_QUEUE: ${REVIEW_RPC_QUEUE}
+      STEP_DLQ_QUEUE: ${STEP_DLQ_QUEUE}
+      RERANKER_MODEL: ${RERANKER_MODEL}
+      HF_HOME: ${HF_HOME}
+      TRANSFORMERS_CACHE: ${TRANSFORMERS_CACHE}
+      HEARTBEAT_INTERVAL_SECONDS: ${HEARTBEAT_INTERVAL_SECONDS}
+    volumes:
+      - hf_cache:/data/hf
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -m
+        - shared.bootstrap.healthcheck
+        - --agent
+        - content
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  review-worker:
+    build:
+      context: ./agents
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      ollama-model-init:
+        condition: service_completed_successfully
+    command:
+      - python
+      - -m
+      - review_agent.main
+    environment:
+      PYTHON_ENV: ${PYTHON_ENV}
+      AGENT_NAME: review
+      DATABASE_URL: ${DATABASE_URL}
+      AMQP_URL: ${AMQP_URL}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      OLLAMA_MAIN_MODEL: ${OLLAMA_MAIN_MODEL}
+      OLLAMA_REPAIR_MODEL: ${OLLAMA_REPAIR_MODEL}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL}
+      CONTENT_RPC_QUEUE: ${CONTENT_RPC_QUEUE}
+      REVIEW_RPC_QUEUE: ${REVIEW_RPC_QUEUE}
+      STEP_DLQ_QUEUE: ${STEP_DLQ_QUEUE}
+      RERANKER_MODEL: ${RERANKER_MODEL}
+      HF_HOME: ${HF_HOME}
+      TRANSFORMERS_CACHE: ${TRANSFORMERS_CACHE}
+      HEARTBEAT_INTERVAL_SECONDS: ${HEARTBEAT_INTERVAL_SECONDS}
+    volumes:
+      - hf_cache:/data/hf
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -m
+        - shared.bootstrap.healthcheck
+        - --agent
+        - review
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
+
+  reranker-cache-init:
+    build:
+      context: ./agents
+    profiles:
+      - manual
+    restart: "no"
+    command:
+      - python
+      - /app/prefetch.py
+    environment:
+      RERANKER_MODEL: ${RERANKER_MODEL}
+      HF_HOME: ${HF_HOME}
+      TRANSFORMERS_CACHE: ${TRANSFORMERS_CACHE}
+    volumes:
+      - hf_cache:/data/hf
+      - ./infra/reranker/bootstrap/prefetch.py:/app/prefetch.py:ro
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  ollama_data:
+  hf_cache:
