@@ -15,3 +15,8 @@ Repositorio base do MVP do AI Content Engine.
 - `infra/`: bootstrap de Postgres, RabbitMQ, Ollama e reranker
 - `docs/`: documentacao consolidada do projeto
 
+## Bootstrap de banco
+
+- O fluxo local agora inclui o servico one-shot `db-bootstrap`
+- Ele aplica migrations, seeda o admin bootstrap, gera embeddings reais para `persona` e `knowledge` e verifica a integridade do schema
+- O preset global `content_review_v1` nasce com o UUID fixo `c7d7f8a1-5e54-4fb3-9a9a-0c0a9fd0f7d1`
