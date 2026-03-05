@@ -1,0 +1,20 @@
+[project]
+name = "ai-content-engine-agents"
+version = "0.1.0"
+description = "Minimal worker bootstrap services for AI Content Engine"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "aio-pika>=9.5.5,<10",
+  "httpx>=0.28.1,<1",
+  "psycopg[binary]>=3.2.5,<4",
+  "pydantic-settings>=2.8.1,<3",
+  "sentence-transformers>=3.4.1,<4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false
+
