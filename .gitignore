@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+agents/.venv/
+agents/.python-version
+.tmp-tools/
+orchestrator/node_modules/
+orchestrator/dist/
+docker-data/
