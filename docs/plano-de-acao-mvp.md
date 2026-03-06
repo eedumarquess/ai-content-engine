@@ -179,6 +179,8 @@ Status: concluido na implementacao atual, com `db-bootstrap`, preset global `con
 
 Fechar o contrato da API, o schema global versionado e os formatos de erro antes de conectar os agents.
 
+Status: concluido na implementacao atual, com Pydantic v2 como source of truth, exportacao de JSON Schema para o NestJS e validacao dupla do contrato.
+
 #### Entregaveis
 
 - request DTO do `POST /generate-content`
@@ -188,11 +190,11 @@ Fechar o contrato da API, o schema global versionado e os formatos de erro antes
 
 #### Passos
 
-- [ ] definir payload do `POST /generate-content` com referencia ao preset de pipeline
-- [ ] definir retorno do ACK com `generation_id`, `status` e endpoint de consulta
-- [ ] definir retorno do `GET /generations/:id` com `status`, `result`, `errors` e metadados
-- [ ] definir o schema global com `topic`, `strategy`, `post`, `media` e `metadata`
-- [ ] marcar campos obrigatorios:
+- [x] definir payload do `POST /generate-content` com referencia ao preset de pipeline
+- [x] definir retorno do ACK com `generation_id`, `status` e endpoint de consulta
+- [x] definir retorno do `GET /generations/:id` com `status`, `result`, `errors` e metadados
+- [x] definir o schema global com `topic`, `strategy`, `post`, `media` e `metadata`
+- [x] marcar campos obrigatorios:
   - `topic`
   - `post.hook`
   - `post.body`
@@ -202,7 +204,7 @@ Fechar o contrato da API, o schema global versionado e os formatos de erro antes
   - `metadata.pipeline`
   - `metadata.generation_id`
   - `metadata.schema_version`
-- [ ] marcar campos opcionais ou vazios no MVP:
+- [x] marcar campos opcionais ou vazios no MVP:
   - `strategy.goal`
   - `strategy.angle`
   - `strategy.audience`
@@ -211,7 +213,11 @@ Fechar o contrato da API, o schema global versionado e os formatos de erro antes
   - `media.video_prompt`
   - `metadata.persona_id`
   - `metadata.performance_context_used`
-- [ ] padronizar `errors: [{code, message, field, trace_id}]`
+- [x] padronizar `errors: [{code, message, field, trace_id}]`
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 3](./parte-3-alteracoes.md)
 
 #### Criterio de pronto
 
