@@ -1,0 +1,415 @@
+{
+  "$defs": {
+    "ApiError": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "authentication_failed",
+            "validation_error",
+            "pipeline_preset_not_found",
+            "generation_not_found",
+            "step_failed",
+            "step_timeout",
+            "repair_exhausted",
+            "internal_error"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "message": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Message",
+          "type": "string"
+        },
+        "trace_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trace Id"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "ApiError",
+      "type": "object"
+    },
+    "GenerationDocumentMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Format",
+          "type": "string"
+        },
+        "generation_id": {
+          "format": "uuid",
+          "title": "Generation Id",
+          "type": "string"
+        },
+        "performance_context_used": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Performance Context Used"
+        },
+        "persona_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Persona Id"
+        },
+        "pipeline": {
+          "items": {
+            "enum": [
+              "content",
+              "review"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Pipeline",
+          "type": "array"
+        },
+        "platform": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Platform",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "platform",
+        "format",
+        "pipeline",
+        "generation_id",
+        "schema_version"
+      ],
+      "title": "GenerationDocumentMetadata",
+      "type": "object"
+    },
+    "GenerationDocumentV1": {
+      "additionalProperties": false,
+      "properties": {
+        "media": {
+          "$ref": "#/$defs/GenerationMedia"
+        },
+        "metadata": {
+          "$ref": "#/$defs/GenerationDocumentMetadata"
+        },
+        "post": {
+          "$ref": "#/$defs/GenerationPost"
+        },
+        "strategy": {
+          "$ref": "#/$defs/GenerationStrategy"
+        },
+        "topic": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Topic",
+          "type": "string"
+        }
+      },
+      "required": [
+        "topic",
+        "strategy",
+        "post",
+        "media",
+        "metadata"
+      ],
+      "title": "GenerationDocumentV1",
+      "type": "object"
+    },
+    "GenerationExecutionMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completed At"
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "pipeline_preset_id": {
+          "format": "uuid",
+          "title": "Pipeline Preset Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Started At"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/GenerationStepSummary"
+          },
+          "title": "Steps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pipeline_preset_id",
+        "schema_version",
+        "created_at",
+        "steps"
+      ],
+      "title": "GenerationExecutionMetadata",
+      "type": "object"
+    },
+    "GenerationMedia": {
+      "additionalProperties": false,
+      "properties": {
+        "carousel": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Carousel",
+          "type": "array"
+        },
+        "image_prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Image Prompt"
+        },
+        "video_prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Video Prompt"
+        }
+      },
+      "title": "GenerationMedia",
+      "type": "object"
+    },
+    "GenerationPost": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Body",
+          "type": "string"
+        },
+        "cta": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Cta",
+          "type": "string"
+        },
+        "hook": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Hook",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hook",
+        "body",
+        "cta"
+      ],
+      "title": "GenerationPost",
+      "type": "object"
+    },
+    "GenerationStepSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_count": {
+          "minimum": 0,
+          "title": "Attempt Count",
+          "type": "integer"
+        },
+        "name": {
+          "enum": [
+            "content",
+            "review"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "running",
+            "completed",
+            "failed",
+            "dlq"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "status",
+        "attempt_count"
+      ],
+      "title": "GenerationStepSummary",
+      "type": "object"
+    },
+    "GenerationStrategy": {
+      "additionalProperties": false,
+      "properties": {
+        "angle": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Angle"
+        },
+        "audience": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audience"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goal"
+        }
+      },
+      "title": "GenerationStrategy",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "errors": {
+      "items": {
+        "$ref": "#/$defs/ApiError"
+      },
+      "title": "Errors",
+      "type": "array"
+    },
+    "generation_id": {
+      "format": "uuid",
+      "title": "Generation Id",
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "#/$defs/GenerationExecutionMetadata"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GenerationDocumentV1"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "generation_id",
+    "status",
+    "metadata"
+  ],
+  "title": "GetGenerationResponse",
+  "type": "object"
+}

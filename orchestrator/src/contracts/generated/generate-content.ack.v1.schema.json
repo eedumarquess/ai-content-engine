@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "generation_id": {
+      "format": "uuid",
+      "title": "Generation Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "queued",
+      "title": "Status",
+      "type": "string"
+    },
+    "status_url": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Status Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "generation_id",
+    "status",
+    "status_url"
+  ],
+  "title": "GenerateContentAck",
+  "type": "object"
+}

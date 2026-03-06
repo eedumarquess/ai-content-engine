@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Format",
+      "type": "string"
+    },
+    "persona_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Persona Id"
+    },
+    "pipeline_preset_id": {
+      "format": "uuid",
+      "title": "Pipeline Preset Id",
+      "type": "string"
+    },
+    "platform": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Platform",
+      "type": "string"
+    },
+    "topic": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Topic",
+      "type": "string"
+    }
+  },
+  "required": [
+    "topic",
+    "platform",
+    "format",
+    "pipeline_preset_id"
+  ],
+  "title": "GenerateContentRequest",
+  "type": "object"
+}

@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "GenerationDocumentMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Format",
+          "type": "string"
+        },
+        "generation_id": {
+          "format": "uuid",
+          "title": "Generation Id",
+          "type": "string"
+        },
+        "performance_context_used": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Performance Context Used"
+        },
+        "persona_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Persona Id"
+        },
+        "pipeline": {
+          "items": {
+            "enum": [
+              "content",
+              "review"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Pipeline",
+          "type": "array"
+        },
+        "platform": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Platform",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "platform",
+        "format",
+        "pipeline",
+        "generation_id",
+        "schema_version"
+      ],
+      "title": "GenerationDocumentMetadata",
+      "type": "object"
+    },
+    "GenerationMedia": {
+      "additionalProperties": false,
+      "properties": {
+        "carousel": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Carousel",
+          "type": "array"
+        },
+        "image_prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Image Prompt"
+        },
+        "video_prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Video Prompt"
+        }
+      },
+      "title": "GenerationMedia",
+      "type": "object"
+    },
+    "GenerationPost": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Body",
+          "type": "string"
+        },
+        "cta": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Cta",
+          "type": "string"
+        },
+        "hook": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Hook",
+          "type": "string"
+        }
+      },
+      "required": [
+        "hook",
+        "body",
+        "cta"
+      ],
+      "title": "GenerationPost",
+      "type": "object"
+    },
+    "GenerationStrategy": {
+      "additionalProperties": false,
+      "properties": {
+        "angle": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Angle"
+        },
+        "audience": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audience"
+        },
+        "goal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Goal"
+        }
+      },
+      "title": "GenerationStrategy",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "media": {
+      "$ref": "#/$defs/GenerationMedia"
+    },
+    "metadata": {
+      "$ref": "#/$defs/GenerationDocumentMetadata"
+    },
+    "post": {
+      "$ref": "#/$defs/GenerationPost"
+    },
+    "strategy": {
+      "$ref": "#/$defs/GenerationStrategy"
+    },
+    "topic": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Topic",
+      "type": "string"
+    }
+  },
+  "required": [
+    "topic",
+    "strategy",
+    "post",
+    "media",
+    "metadata"
+  ],
+  "title": "GenerationDocumentV1",
+  "type": "object"
+}
