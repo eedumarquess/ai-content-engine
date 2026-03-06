@@ -178,6 +178,8 @@ export class ContractsService {
           ? 'Field is not allowed.'
           : error.keyword === 'required'
             ? 'Field is required.'
+            : error.keyword === 'format'
+              ? `Field must match format '${String((error.params as { format?: string }).format ?? 'unknown')}'.`
             : error.message ?? 'Contract validation failed.';
 
       return createApiError(code, message, field);

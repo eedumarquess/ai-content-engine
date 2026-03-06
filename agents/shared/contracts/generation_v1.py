@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 SCHEMA_VERSION = "v1"
 
@@ -42,8 +43,19 @@ class ContractModel(BaseModel):
 class ApiError(ContractModel):
     code: ApiErrorCode
     message: RequiredString
-    field: str | None = None
-    trace_id: str | None = None
+    field: str | None
+    trace_id: str | None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nullable_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("field", None)
+        normalized.setdefault("trace_id", None)
+        return normalized
 
 
 class ApiErrorResponse(ContractModel):
@@ -65,9 +77,21 @@ class GenerateContentAck(ContractModel):
 
 
 class GenerationStrategy(ContractModel):
-    goal: str | None = None
-    angle: str | None = None
-    audience: str | None = None
+    goal: str | None
+    angle: str | None
+    audience: str | None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nullable_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("goal", None)
+        normalized.setdefault("angle", None)
+        normalized.setdefault("audience", None)
+        return normalized
 
 
 class GenerationPost(ContractModel):
@@ -77,9 +101,21 @@ class GenerationPost(ContractModel):
 
 
 class GenerationMedia(ContractModel):
-    image_prompt: str | None = None
-    carousel: list[str] = Field(default_factory=list)
-    video_prompt: str | None = None
+    image_prompt: str | None
+    carousel: list[str]
+    video_prompt: str | None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nullable_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("image_prompt", None)
+        normalized.setdefault("carousel", [])
+        normalized.setdefault("video_prompt", None)
+        return normalized
 
 
 class GenerationDocumentMetadata(ContractModel):
@@ -88,8 +124,19 @@ class GenerationDocumentMetadata(ContractModel):
     pipeline: list[PipelineStepName] = Field(min_length=1)
     generation_id: UUID
     schema_version: Literal[SCHEMA_VERSION]
-    persona_id: UUID | None = None
-    performance_context_used: bool | None = None
+    persona_id: UUID | None
+    performance_context_used: bool | None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nullable_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("persona_id", None)
+        normalized.setdefault("performance_context_used", None)
+        return normalized
 
 
 class GenerationDocumentV1(ContractModel):
@@ -109,18 +156,40 @@ class GenerationStepSummary(ContractModel):
 class GenerationExecutionMetadata(ContractModel):
     pipeline_preset_id: UUID
     schema_version: Literal[SCHEMA_VERSION]
-    created_at: str
-    started_at: str | None = None
-    completed_at: str | None = None
+    created_at: datetime
+    started_at: datetime | None
+    completed_at: datetime | None
     steps: list[GenerationStepSummary]
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nullable_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("started_at", None)
+        normalized.setdefault("completed_at", None)
+        return normalized
 
 
 class GetGenerationResponse(ContractModel):
     generation_id: UUID
     status: GenerationStatus
-    result: GenerationDocumentV1 | None = None
-    errors: list[ApiError] = Field(default_factory=list)
+    result: GenerationDocumentV1 | None
+    errors: list[ApiError]
     metadata: GenerationExecutionMetadata
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_nullable_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("result", None)
+        normalized.setdefault("errors", [])
+        return normalized
 
 
 SCHEMA_ARTIFACT_FILENAMES = {

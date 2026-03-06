@@ -44,4 +44,29 @@ describe('ContractsService', () => {
       },
     );
   });
+
+  it('rejects an invalid pipeline preset uuid with a structured validation error', () => {
+    assert.throws(
+      () =>
+        contractsService.parseGenerateContentRequest({
+          topic: 'RAG em producao',
+          platform: 'linkedin',
+          format: 'thread',
+          pipeline_preset_id: 'not-a-uuid',
+        }),
+      (error: unknown) => {
+        assert.ok(error instanceof ApiErrorsHttpException);
+        assert.equal(error.getStatus(), 400);
+        assert.deepEqual(error.payload.errors, [
+          {
+            code: 'validation_error',
+            message: "Field must match format 'uuid'.",
+            field: 'pipeline_preset_id',
+            trace_id: null,
+          },
+        ]);
+        return true;
+      },
+    );
+  });
 });

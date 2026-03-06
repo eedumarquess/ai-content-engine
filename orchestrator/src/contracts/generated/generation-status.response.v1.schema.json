@@ -26,7 +26,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Field"
         },
         "message": {
@@ -44,13 +43,14 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Trace Id"
         }
       },
       "required": [
         "code",
-        "message"
+        "message",
+        "field",
+        "trace_id"
       ],
       "title": "ApiError",
       "type": "object"
@@ -78,7 +78,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Performance Context Used"
         },
         "persona_id": {
@@ -91,7 +90,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Persona Id"
         },
         "pipeline": {
@@ -123,7 +121,9 @@
         "format",
         "pipeline",
         "generation_id",
-        "schema_version"
+        "schema_version",
+        "persona_id",
+        "performance_context_used"
       ],
       "title": "GenerationDocumentMetadata",
       "type": "object"
@@ -166,16 +166,17 @@
         "completed_at": {
           "anyOf": [
             {
+              "format": "date-time",
               "type": "string"
             },
             {
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Completed At"
         },
         "created_at": {
+          "format": "date-time",
           "title": "Created At",
           "type": "string"
         },
@@ -192,13 +193,13 @@
         "started_at": {
           "anyOf": [
             {
+              "format": "date-time",
               "type": "string"
             },
             {
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Started At"
         },
         "steps": {
@@ -213,6 +214,8 @@
         "pipeline_preset_id",
         "schema_version",
         "created_at",
+        "started_at",
+        "completed_at",
         "steps"
       ],
       "title": "GenerationExecutionMetadata",
@@ -237,7 +240,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Image Prompt"
         },
         "video_prompt": {
@@ -249,10 +251,14 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Video Prompt"
         }
       },
+      "required": [
+        "image_prompt",
+        "carousel",
+        "video_prompt"
+      ],
       "title": "GenerationMedia",
       "type": "object"
     },
@@ -334,7 +340,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Angle"
         },
         "audience": {
@@ -346,7 +351,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Audience"
         },
         "goal": {
@@ -358,10 +362,14 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Goal"
         }
       },
+      "required": [
+        "goal",
+        "angle",
+        "audience"
+      ],
       "title": "GenerationStrategy",
       "type": "object"
     }
@@ -391,8 +399,7 @@
         {
           "type": "null"
         }
-      ],
-      "default": null
+      ]
     },
     "status": {
       "enum": [
@@ -408,6 +415,8 @@
   "required": [
     "generation_id",
     "status",
+    "result",
+    "errors",
     "metadata"
   ],
   "title": "GetGenerationResponse",

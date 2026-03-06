@@ -23,7 +23,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Performance Context Used"
         },
         "persona_id": {
@@ -36,7 +35,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Persona Id"
         },
         "pipeline": {
@@ -68,7 +66,9 @@
         "format",
         "pipeline",
         "generation_id",
-        "schema_version"
+        "schema_version",
+        "persona_id",
+        "performance_context_used"
       ],
       "title": "GenerationDocumentMetadata",
       "type": "object"
@@ -92,7 +92,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Image Prompt"
         },
         "video_prompt": {
@@ -104,10 +103,14 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Video Prompt"
         }
       },
+      "required": [
+        "image_prompt",
+        "carousel",
+        "video_prompt"
+      ],
       "title": "GenerationMedia",
       "type": "object"
     },
@@ -153,7 +156,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Angle"
         },
         "audience": {
@@ -165,7 +167,6 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Audience"
         },
         "goal": {
@@ -177,10 +178,14 @@
               "type": "null"
             }
           ],
-          "default": null,
           "title": "Goal"
         }
       },
+      "required": [
+        "goal",
+        "angle",
+        "audience"
+      ],
       "title": "GenerationStrategy",
       "type": "object"
     }
