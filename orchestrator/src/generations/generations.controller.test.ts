@@ -33,5 +33,13 @@ describe('GenerationsController', () => {
       {},
     );
     assert.equal(response.status, 'queued');
+    assert.equal(
+      response.generation_id,
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
+    assert.equal(
+      response.status_url,
+      '/generations/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
   });
 });

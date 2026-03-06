@@ -1,12 +1,15 @@
-export type ApiErrorCode =
-  | 'authentication_failed'
-  | 'validation_error'
-  | 'pipeline_preset_not_found'
-  | 'generation_not_found'
-  | 'step_failed'
-  | 'step_timeout'
-  | 'repair_exhausted'
-  | 'internal_error';
+export const API_ERROR_CODES = [
+  'authentication_failed',
+  'validation_error',
+  'pipeline_preset_not_found',
+  'generation_not_found',
+  'step_failed',
+  'step_timeout',
+  'repair_exhausted',
+  'internal_error',
+] as const;
+
+export type ApiErrorCode = (typeof API_ERROR_CODES)[number];
 
 export type ApiErrorDto = {
   code: ApiErrorCode;
@@ -40,11 +43,12 @@ export function isApiErrorDto(value: unknown): value is ApiErrorDto {
 
   return (
     typeof value.code === 'string' &&
+    (API_ERROR_CODES as readonly string[]).includes(value.code) &&
     typeof value.message === 'string' &&
-    ('field' in value ? value.field === null || typeof value.field === 'string' : true) &&
-    ('trace_id' in value
-      ? value.trace_id === null || typeof value.trace_id === 'string'
-      : true)
+    'field' in value &&
+    (value.field === null || typeof value.field === 'string') &&
+    'trace_id' in value &&
+    (value.trace_id === null || typeof value.trace_id === 'string')
   );
 }
 

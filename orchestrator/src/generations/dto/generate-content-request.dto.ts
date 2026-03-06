@@ -3,5 +3,5 @@ export type GenerateContentRequestDto = {
   platform: string;
   format: string;
   pipeline_preset_id: string;
-  persona_id: string | null;
+  persona_id?: string | null;
 };

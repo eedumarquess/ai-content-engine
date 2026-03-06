@@ -181,6 +181,142 @@ describe('GenerationsService', () => {
     assert.equal(response.result?.metadata.schema_version, 'v1');
   });
 
+  it('returns a running generation with null result and empty errors', async () => {
+    const databaseService = {
+      query: async <TResult>(
+        text: string,
+      ): Promise<{ rows: TResult[] }> => {
+        if (text.includes('FROM generations')) {
+          return {
+            rows: [
+              {
+                id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+                pipeline_preset_id: PIPELINE_PRESET.id,
+                status: 'running',
+                pipeline: PIPELINE_PRESET.steps,
+                schema_version: 'v1',
+                result_json: null,
+                error_json: null,
+                created_at: '2026-03-05T20:00:00.000Z',
+                started_at: '2026-03-05T20:00:05.000Z',
+                completed_at: null,
+              } as TResult,
+            ],
+          };
+        }
+
+        return {
+          rows: [
+            {
+              step_name: 'content',
+              status: 'running',
+              attempt_count: 1,
+            },
+            {
+              step_name: 'review',
+              status: 'queued',
+              attempt_count: 0,
+            },
+          ] as TResult[],
+        };
+      },
+    } as unknown as DatabaseService;
+    const pipelinePresetsRepository = {
+      findActivePresetForUser: async () => PIPELINE_PRESET,
+    } as unknown as PipelinePresetsRepository;
+    const service = new GenerationsService(
+      databaseService,
+      pipelinePresetsRepository,
+      new ContractsService(),
+    );
+
+    const response = await service.getGeneration(
+      AUTHENTICATED_USER,
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
+
+    assert.equal(response.status, 'running');
+    assert.equal(response.result, null);
+    assert.deepEqual(response.errors, []);
+    assert.equal(response.metadata.started_at, '2026-03-05T20:00:05.000Z');
+    assert.equal(response.metadata.completed_at, null);
+  });
+
+  it('falls back to an internal error when the stored failure payload is invalid', async () => {
+    const databaseService = {
+      query: async <TResult>(
+        text: string,
+      ): Promise<{ rows: TResult[] }> => {
+        if (text.includes('FROM generations')) {
+          return {
+            rows: [
+              {
+                id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+                pipeline_preset_id: PIPELINE_PRESET.id,
+                status: 'failed',
+                pipeline: PIPELINE_PRESET.steps,
+                schema_version: 'v1',
+                result_json: null,
+                error_json: {
+                  errors: [
+                    {
+                      code: 'step_failed',
+                      message: 'Agent failed without normalized metadata.',
+                    },
+                  ],
+                },
+                created_at: '2026-03-05T20:00:00.000Z',
+                started_at: '2026-03-05T20:00:05.000Z',
+                completed_at: '2026-03-05T20:00:45.000Z',
+              } as TResult,
+            ],
+          };
+        }
+
+        return {
+          rows: [
+            {
+              step_name: 'content',
+              status: 'failed',
+              attempt_count: 3,
+            },
+            {
+              step_name: 'review',
+              status: 'dlq',
+              attempt_count: 0,
+            },
+          ] as TResult[],
+        };
+      },
+    } as unknown as DatabaseService;
+    const pipelinePresetsRepository = {
+      findActivePresetForUser: async () => PIPELINE_PRESET,
+    } as unknown as PipelinePresetsRepository;
+    const service = new GenerationsService(
+      databaseService,
+      pipelinePresetsRepository,
+      new ContractsService(),
+    );
+
+    const response = await service.getGeneration(
+      AUTHENTICATED_USER,
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    );
+
+    assert.equal(response.status, 'failed');
+    assert.equal(response.result, null);
+    assert.deepEqual(response.errors, [
+      {
+        code: 'internal_error',
+        message: 'Generation failed without a valid structured error payload.',
+        field: null,
+        trace_id: null,
+      },
+    ]);
+    assert.equal(response.metadata.steps[0]?.status, 'failed');
+    assert.equal(response.metadata.steps[1]?.status, 'dlq');
+  });
+
   it('returns a structured 404 when the generation does not exist for the user', async () => {
     const databaseService = {
       query: async () => ({ rows: [] }),
