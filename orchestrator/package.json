@@ -10,6 +10,7 @@
     "db:seed": "node dist/database/cli/seed.js",
     "db:bootstrap": "node dist/database/cli/bootstrap.js",
     "db:verify": "node dist/database/cli/verify.js",
+    "test": "corepack pnpm build && node --test dist/contracts/contracts.service.test.js dist/auth/auth.service.test.js dist/generations/generations.service.test.js dist/generations/generations.controller.test.js",
     "start": "node dist/main.js",
     "start:prod": "node dist/main.js"
   },
@@ -18,6 +19,8 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.11",
     "@nestjs/platform-express": "^11.0.11",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "amqplib": "^0.10.7",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
