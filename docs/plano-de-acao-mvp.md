@@ -342,6 +342,10 @@ Status: concluido na implementacao atual, com `ContentStepHandler`, prompts vers
 - o agent preenche `post.hook`, `post.body`, `post.cta` e `metadata`
 - o retorno ja chega validado ou cai no repair loop
 
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 6](./parte-6-alteracoes.md)
+
 ### Parte 7 - Implementacao do `review_agent`
 
 #### Objetivo
@@ -371,6 +375,10 @@ Status: concluido na implementacao atual, com `ReviewStepHandler`, prompts versi
 
 - o `review_agent` melhora a qualidade sem quebrar o contrato
 - o resultado final continua aderente ao schema global versionado
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 7](./parte-7-alteracoes.md)
 
 ### Parte 8 - Ingestao de `performance_memory`
 
@@ -404,6 +412,10 @@ Status: concluido na implementacao atual, com endpoint autenticado `POST /perfor
 - o sistema aceita eventos de performance
 - a estrutura fica pronta para uso gradual em retrieval futuro
 
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 8](./parte-8-alteracoes.md)
+
 ### Parte 9 - Prompt versioning
 
 #### Objetivo
@@ -429,6 +441,10 @@ Status: concluido na implementacao atual, com prompts versionados em arquivo par
 
 - nenhum prompt principal fica hardcoded
 - toda geracao consegue ser auditada por versao de prompt
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 9](./parte-9-alteracoes.md)
 
 ### Parte 10 - Repair loop
 
@@ -458,6 +474,10 @@ Status: concluido na implementacao atual, com `RepairService` acionado em `conte
 
 - o sistema tenta corrigir automaticamente os erros recuperaveis
 - quando falha, deixa rastros suficientes para reproduzir o problema
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 10](./parte-10-alteracoes.md)
 
 ### Parte 11 - Tracing, custo e OpenTelemetry readiness
 
@@ -501,6 +521,10 @@ Status: concluido na implementacao atual, com traces persistidos por step, agreg
 - cada step deixa rastro tecnico completo
 - o custo por geracao pode ser consultado diretamente
 
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 11](./parte-11-alteracoes.md)
+
 ### Parte 12 - Integracao ponta a ponta e demo
 
 #### Objetivo
@@ -531,6 +555,10 @@ Status: concluido na implementacao atual, com teste integrado automatizado cobri
 
 - uma request percorre todo o pipeline sem intervencao manual
 - a base guarda historico completo da execucao
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 12](./parte-12-alteracoes.md)
 
 ## 6. Ordem sugerida de execucao
 
