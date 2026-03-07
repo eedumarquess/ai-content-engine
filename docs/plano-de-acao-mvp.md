@@ -231,6 +231,8 @@ Documentacao detalhada desta etapa:
 
 Implementar o cerebro da operacao: auth, criacao da geracao, execucao do pipeline, retry, DLQ e consolidacao do resultado.
 
+Status: concluido na implementacao atual, com `GenerateController`, `GenerationsQueryService`, `PipelineExecutor`, `RabbitRpcClient`, `RabbitDlqService`, retry por step, DLQ e recovery no startup.
+
 #### Entregaveis
 
 - autenticacao basica
@@ -242,19 +244,23 @@ Implementar o cerebro da operacao: auth, criacao da geracao, execucao do pipelin
 
 #### Passos
 
-- [ ] implementar modulo de auth basico
-- [ ] criar `GenerateController` para iniciar geracoes
-- [ ] criar endpoint de consulta por `generation_id`
-- [ ] carregar o preset de pipeline a partir do banco
-- [ ] criar a linha em `generations` com status `queued`
-- [ ] executar `content -> review` em ordem sequencial
-- [ ] gerar `correlation_id` por `generation_id + step_name`
-- [ ] persistir `input_json`, `output_json`, `attempt_count` e `error_json` em `generation_steps`
-- [ ] aplicar timeout de 5 minutos por step
-- [ ] aplicar retry de ate 3 tentativas por step
-- [ ] enviar para DLQ quando o step falhar definitivamente
-- [ ] validar o output final no NestJS antes de expor
-- [ ] consolidar `result_json` e `status` final da geracao
+- [x] implementar modulo de auth basico
+- [x] criar `GenerateController` para iniciar geracoes
+- [x] criar endpoint de consulta por `generation_id`
+- [x] carregar o preset de pipeline a partir do banco
+- [x] criar a linha em `generations` com status `queued`
+- [x] executar `content -> review` em ordem sequencial
+- [x] gerar `correlation_id` por `generation_id + step_name`
+- [x] persistir `input_json`, `output_json`, `attempt_count` e `error_json` em `generation_steps`
+- [x] aplicar timeout de 5 minutos por step
+- [x] aplicar retry de ate 3 tentativas por step
+- [x] enviar para DLQ quando o step falhar definitivamente
+- [x] validar o output final no NestJS antes de expor
+- [x] consolidar `result_json` e `status` final da geracao
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 4](./parte-4-alteracoes.md)
 
 #### Criterio de pronto
 
@@ -512,11 +518,11 @@ Validar o fluxo completo com a arquitetura real do MVP.
 
 - [x] Parte 1 - Infra local e ambiente de execucao
 - [x] Parte 2 - Banco, autenticacao e persistencia base
-- [ ] Parte 3 - Contrato global e endpoints do MVP
+- [x] Parte 3 - Contrato global e endpoints do MVP
 
 ### Bloco 2 - Core do sistema
 
-- [ ] Parte 4 - Orchestrator NestJS
+- [x] Parte 4 - Orchestrator NestJS
 - [ ] Parte 5 - Shared layer dos agents Python
 - [ ] Parte 6 - `content_agent`
 - [ ] Parte 7 - `review_agent`
