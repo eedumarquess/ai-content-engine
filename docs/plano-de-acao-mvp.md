@@ -314,6 +314,8 @@ Documentacao detalhada desta etapa:
 
 Gerar a primeira versao do conteudo usando contexto recuperado por usuario.
 
+Status: concluido na implementacao atual, com `ContentStepHandler`, prompts versionados `v1` e `v2`, retrieval com `persona/knowledge/performance`, rerank top 20 -> top 5, validacao do schema global, persistencia de trace/custo e integracao do worker RabbitMQ.
+
 #### Entregaveis
 
 - handler do `content_agent`
@@ -322,18 +324,18 @@ Gerar a primeira versao do conteudo usando contexto recuperado por usuario.
 
 #### Passos
 
-- [ ] montar query com `persona + topic + format + platform`
-- [ ] recuperar documentos com filtro por usuario e tipo
-- [ ] reranquear top 20 para top 5
-- [ ] montar blocos de contexto:
+- [x] montar query com `persona + topic + format + platform`
+- [x] recuperar documentos com filtro por usuario e tipo
+- [x] reranquear top 20 para top 5
+- [x] montar blocos de contexto:
   - `persona_context`
   - `knowledge_context`
   - `performance_context` opcional
-- [ ] renderizar prompt versionado
-- [ ] chamar o LLM principal
-- [ ] validar saida contra o schema global
-- [ ] persistir trace e custo estimado
-- [ ] responder ao orchestrator com JSON valido e metadados tecnicos
+- [x] renderizar prompt versionado
+- [x] chamar o LLM principal
+- [x] validar saida contra o schema global
+- [x] persistir trace e custo estimado
+- [x] responder ao orchestrator com JSON valido e metadados tecnicos
 
 #### Criterio de pronto
 
@@ -530,7 +532,7 @@ Validar o fluxo completo com a arquitetura real do MVP.
 
 - [x] Parte 4 - Orchestrator NestJS
 - [x] Parte 5 - Shared layer dos agents Python
-- [ ] Parte 6 - `content_agent`
+- [x] Parte 6 - `content_agent`
 - [ ] Parte 7 - `review_agent`
 
 ### Bloco 3 - Robustez e memoria
