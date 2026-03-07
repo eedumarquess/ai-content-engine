@@ -8,6 +8,7 @@ Este diretorio centraliza a documentacao do projeto e o historico da implementac
 - [Implementacao da Parte 2](./parte-2-alteracoes.md)
 - [Implementacao da Parte 3](./parte-3-alteracoes.md)
 - [Implementacao da Parte 4](./parte-4-alteracoes.md)
+- [Implementacao da Parte 5](./parte-5-alteracoes.md)
 - [Infra local e operacao](./infra-local.md)
 - [Plano de acao do MVP](./plano-de-acao-mvp.md)
 - [Questionario de decisoes do MVP](./questionario-decisoes-mvp.md)
@@ -26,6 +27,7 @@ Nesta etapa, o projeto ja conta com a fundacao operacional e de persistencia do 
 - healthchecks reais para banco, broker, modelos e filas
 - orchestrator com dispatcher assincrono, executor sequencial, retry, DLQ e recovery no startup
 - workers com bootstrap compartilhado, validacao de dependencias e heartbeat
+- shared layer Python com cliente Ollama, retrieval, reranker, prompt loader, repair, tracing e worker base
 - cache opcional do reranker `BAAI/bge-reranker-base`
 
 ## Convencoes
@@ -35,4 +37,5 @@ Nesta etapa, o projeto ja conta com a fundacao operacional e de persistencia do 
 - A implementacao da persistencia base fica em `docs/parte-2-alteracoes.md`
 - A implementacao do contrato global e endpoints do MVP fica em `docs/parte-3-alteracoes.md`
 - A implementacao do orchestrator NestJS fica em `docs/parte-4-alteracoes.md`
+- A implementacao da shared layer dos agents Python fica em `docs/parte-5-alteracoes.md`
 - Os documentos de produto e arquitetura que antes estavam na raiz agora ficam todos dentro de `docs/`

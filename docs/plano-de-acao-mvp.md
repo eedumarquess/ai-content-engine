@@ -274,6 +274,8 @@ Documentacao detalhada desta etapa:
 
 Criar os componentes reutilizaveis para todos os agents, alinhados a Ollama, Pydantic e tracing.
 
+Status: concluido na implementacao atual, com cliente Ollama, embedder, retrieval, reranker, prompt loader, repair service, trace writer, worker base RabbitMQ e exportacao de JSON Schema da shared layer.
+
 #### Entregaveis
 
 - cliente LLM para Ollama
@@ -287,15 +289,19 @@ Criar os componentes reutilizaveis para todos os agents, alinhados a Ollama, Pyd
 
 #### Passos
 
-- [ ] implementar `client.py` para `qwen2.5:7b` e `qwen2.5:3b`
-- [ ] implementar `embedder.py` com `nomic-embed-text`
-- [ ] implementar `retriever.py` com filtros por `doc_type`, `platform`, `user_id` e tags
-- [ ] implementar `reranker.py` com `BAAI/bge-reranker-base`
-- [ ] implementar `loader.py` para prompts versionados
-- [ ] implementar schemas Pydantic v2 e exportacao para JSON Schema
-- [ ] implementar `repair.py`
-- [ ] implementar `trace_writer.py`
-- [ ] implementar `worker.py` com contrato de consumo e resposta
+- [x] implementar `client.py` para `qwen2.5:7b` e `qwen2.5:3b`
+- [x] implementar `embedder.py` com `nomic-embed-text`
+- [x] implementar `retriever.py` com filtros por `doc_type`, `platform`, `user_id` e tags
+- [x] implementar `reranker.py` com `BAAI/bge-reranker-base`
+- [x] implementar `loader.py` para prompts versionados
+- [x] implementar schemas Pydantic v2 e exportacao para JSON Schema
+- [x] implementar `repair.py`
+- [x] implementar `trace_writer.py`
+- [x] implementar `worker.py` com contrato de consumo e resposta
+
+Documentacao detalhada desta etapa:
+
+- [Implementacao da Parte 5](./parte-5-alteracoes.md)
 
 #### Criterio de pronto
 
@@ -523,7 +529,7 @@ Validar o fluxo completo com a arquitetura real do MVP.
 ### Bloco 2 - Core do sistema
 
 - [x] Parte 4 - Orchestrator NestJS
-- [ ] Parte 5 - Shared layer dos agents Python
+- [x] Parte 5 - Shared layer dos agents Python
 - [ ] Parte 6 - `content_agent`
 - [ ] Parte 7 - `review_agent`
 
