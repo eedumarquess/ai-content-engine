@@ -1,0 +1,188 @@
+{
+  "$defs": {
+    "StepConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Model",
+          "type": "string"
+        },
+        "provider": {
+          "const": "ollama",
+          "title": "Provider",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "StepConfig",
+      "type": "object"
+    },
+    "StepGenerationContext": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_id": {
+          "format": "uuid",
+          "title": "Generation Id",
+          "type": "string"
+        },
+        "pipeline": {
+          "items": {
+            "enum": [
+              "content",
+              "review"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Pipeline",
+          "type": "array"
+        },
+        "pipeline_preset_id": {
+          "format": "uuid",
+          "title": "Pipeline Preset Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "user_id": {
+          "format": "uuid",
+          "title": "User Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generation_id",
+        "pipeline_preset_id",
+        "user_id",
+        "pipeline",
+        "schema_version"
+      ],
+      "title": "StepGenerationContext",
+      "type": "object"
+    },
+    "StepInputEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "document": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Document"
+        },
+        "generation": {
+          "$ref": "#/$defs/StepGenerationContext"
+        },
+        "request": {
+          "$ref": "#/$defs/StepRequestPayload"
+        }
+      },
+      "required": [
+        "request",
+        "generation"
+      ],
+      "title": "StepInputEnvelope",
+      "type": "object"
+    },
+    "StepRequestPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Format",
+          "type": "string"
+        },
+        "persona_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Persona Id"
+        },
+        "platform": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Platform",
+          "type": "string"
+        },
+        "topic": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Topic",
+          "type": "string"
+        }
+      },
+      "required": [
+        "topic",
+        "platform",
+        "format"
+      ],
+      "title": "StepRequestPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "config": {
+      "$ref": "#/$defs/StepConfig"
+    },
+    "generation_id": {
+      "format": "uuid",
+      "title": "Generation Id",
+      "type": "string"
+    },
+    "input_json": {
+      "$ref": "#/$defs/StepInputEnvelope"
+    },
+    "prompt_version": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Prompt Version",
+      "type": "string"
+    },
+    "step_name": {
+      "enum": [
+        "content",
+        "review"
+      ],
+      "title": "Step Name",
+      "type": "string"
+    },
+    "user_id": {
+      "format": "uuid",
+      "title": "User Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "generation_id",
+    "user_id",
+    "step_name",
+    "input_json",
+    "prompt_version",
+    "config"
+  ],
+  "title": "StepRpcRequest",
+  "type": "object"
+}

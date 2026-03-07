@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "doc_types": {
+      "items": {
+        "enum": [
+          "persona",
+          "knowledge",
+          "performance"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Doc Types",
+      "type": "array"
+    },
+    "platform": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Platform"
+    },
+    "tags": {
+      "items": {
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "user_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "User Id"
+    }
+  },
+  "title": "RetrievalFilters",
+  "type": "object"
+}

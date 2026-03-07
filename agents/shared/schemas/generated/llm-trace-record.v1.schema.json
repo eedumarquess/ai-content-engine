@@ -1,0 +1,223 @@
+{
+  "$defs": {
+    "RetrievedDocumentPreview": {
+      "additionalProperties": false,
+      "properties": {
+        "content_preview": {
+          "title": "Content Preview",
+          "type": "string"
+        },
+        "doc_type": {
+          "enum": [
+            "persona",
+            "knowledge",
+            "performance"
+          ],
+          "title": "Doc Type",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "platform": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Platform"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "doc_type",
+        "content_preview"
+      ],
+      "title": "RetrievedDocumentPreview",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_name": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Agent Name",
+      "type": "string"
+    },
+    "cost_usd": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Cost Usd"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "error_json": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Json"
+    },
+    "generation_id": {
+      "format": "uuid",
+      "title": "Generation Id",
+      "type": "string"
+    },
+    "latency_ms": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Latency Ms",
+      "type": "integer"
+    },
+    "model": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Model",
+      "type": "string"
+    },
+    "otel_span_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Otel Span Id"
+    },
+    "otel_trace_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Otel Trace Id"
+    },
+    "output_json": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Output Json"
+    },
+    "prompt_text": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Prompt Text",
+      "type": "string"
+    },
+    "prompt_version": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Prompt Version",
+      "type": "string"
+    },
+    "provider": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Provider",
+      "type": "string"
+    },
+    "retrieved_doc_ids": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Retrieved Doc Ids",
+      "type": "array"
+    },
+    "retrieved_docs_preview": {
+      "items": {
+        "$ref": "#/$defs/RetrievedDocumentPreview"
+      },
+      "title": "Retrieved Docs Preview",
+      "type": "array"
+    },
+    "step_name": {
+      "enum": [
+        "content",
+        "review"
+      ],
+      "title": "Step Name",
+      "type": "string"
+    },
+    "tokens_in": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Tokens In",
+      "type": "integer"
+    },
+    "tokens_out": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Tokens Out",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "generation_id",
+    "step_name",
+    "agent_name",
+    "provider",
+    "model",
+    "prompt_version",
+    "prompt_text"
+  ],
+  "title": "LlmTraceRecord",
+  "type": "object"
+}
