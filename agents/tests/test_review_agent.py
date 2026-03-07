@@ -209,6 +209,7 @@ class ReviewStepHandlerTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(retriever.last_filters.user_id, request.user_id)
         self.assertEqual(reranker.last_top_k, 5)
         self.assertEqual(result.reply_metadata.repair_attempts, 0)
+        self.assertEqual(result.reply_metadata.cost_usd, 0)
         self.assertEqual(result.output_json["post"]["hook"], "Hook revisado")
         self.assertEqual(result.output_json["metadata"]["platform"], "linkedin")
         self.assertEqual(result.output_json["metadata"]["performance_context_used"], False)
@@ -263,6 +264,7 @@ class ReviewStepHandlerTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_handler_repairs_invalid_output(self) -> None:
         request = build_request()
+        trace_writer = FakeTraceWriter()
         handler = ReviewStepHandler(
             retriever=FakeRetriever(documents=[]),
             reranker=FakeReranker(documents=[]),
@@ -271,13 +273,15 @@ class ReviewStepHandlerTests(unittest.IsolatedAsyncioTestCase):
             ),
             llm_client=FakeMainLlmClient(text="not-json"),
             repair_service=RepairService(llm_client=FakeRepairClient.success()),
-            trace_writer=FakeTraceWriter(),
+            trace_writer=trace_writer,
         )
 
         result = await handler.handle(request)
 
         self.assertTrue(result.error_json is None)
         self.assertEqual(result.reply_metadata.repair_attempts, 1)
+        self.assertEqual(trace_writer.records[0].error_json["code"], "repair_applied")
+        self.assertEqual(trace_writer.records[0].error_json["raw_output"], "not-json")
         self.assertEqual(result.output_json["post"]["hook"], "Hook recuperado")
 
     async def test_handler_returns_repair_exhausted_failure_with_partial_output(self) -> None:
@@ -301,6 +305,7 @@ class ReviewStepHandlerTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.reply_metadata.repair_attempts, 3)
         self.assertIsNone(result.output_json)
         self.assertEqual(trace_writer.records[0].error_json["code"], "repair_exhausted")
+        self.assertEqual(trace_writer.records[0].error_json["raw_output"], "still-not-json")
 
     async def test_handler_rejects_non_review_step(self) -> None:
         request = build_request(step_name="content")

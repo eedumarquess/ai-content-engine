@@ -180,6 +180,9 @@
           "title": "Created At",
           "type": "string"
         },
+        "metrics": {
+          "$ref": "#/$defs/GenerationExecutionMetrics"
+        },
         "pipeline_preset_id": {
           "format": "uuid",
           "title": "Pipeline Preset Id",
@@ -216,9 +219,68 @@
         "created_at",
         "started_at",
         "completed_at",
-        "steps"
+        "steps",
+        "metrics"
       ],
       "title": "GenerationExecutionMetadata",
+      "type": "object"
+    },
+    "GenerationExecutionMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_steps": {
+          "minimum": 0,
+          "title": "Completed Steps",
+          "type": "integer"
+        },
+        "failed_steps": {
+          "minimum": 0,
+          "title": "Failed Steps",
+          "type": "integer"
+        },
+        "total_cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Total Cost Usd"
+        },
+        "total_latency_ms": {
+          "minimum": 0,
+          "title": "Total Latency Ms",
+          "type": "integer"
+        },
+        "total_repair_attempts": {
+          "minimum": 0,
+          "title": "Total Repair Attempts",
+          "type": "integer"
+        },
+        "total_tokens_in": {
+          "minimum": 0,
+          "title": "Total Tokens In",
+          "type": "integer"
+        },
+        "total_tokens_out": {
+          "minimum": 0,
+          "title": "Total Tokens Out",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_tokens_in",
+        "total_tokens_out",
+        "total_latency_ms",
+        "total_cost_usd",
+        "total_repair_attempts",
+        "completed_steps",
+        "failed_steps"
+      ],
+      "title": "GenerationExecutionMetrics",
       "type": "object"
     },
     "GenerationMedia": {
@@ -295,10 +357,49 @@
     "GenerationStepSummary": {
       "additionalProperties": false,
       "properties": {
+        "agent_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Agent Name"
+        },
         "attempt_count": {
           "minimum": 0,
           "title": "Attempt Count",
           "type": "integer"
+        },
+        "cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Cost Usd"
+        },
+        "latency_ms": {
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model"
         },
         "name": {
           "enum": [
@@ -307,6 +408,22 @@
           ],
           "title": "Name",
           "type": "string"
+        },
+        "prompt_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Prompt Version"
+        },
+        "repair_attempts": {
+          "minimum": 0,
+          "title": "Repair Attempts",
+          "type": "integer"
         },
         "status": {
           "enum": [
@@ -318,12 +435,42 @@
           ],
           "title": "Status",
           "type": "string"
+        },
+        "tokens_in": {
+          "minimum": 0,
+          "title": "Tokens In",
+          "type": "integer"
+        },
+        "tokens_out": {
+          "minimum": 0,
+          "title": "Tokens Out",
+          "type": "integer"
+        },
+        "trace_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Trace Id"
         }
       },
       "required": [
         "name",
         "status",
-        "attempt_count"
+        "attempt_count",
+        "agent_name",
+        "model",
+        "prompt_version",
+        "tokens_in",
+        "tokens_out",
+        "latency_ms",
+        "cost_usd",
+        "repair_attempts",
+        "trace_id"
       ],
       "title": "GenerationStepSummary",
       "type": "object"

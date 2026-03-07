@@ -66,6 +66,7 @@ class WorkerReplyMetadata(SharedModel):
     tokens_in: int = Field(default=0, ge=0)
     tokens_out: int = Field(default=0, ge=0)
     latency_ms: int = Field(default=0, ge=0)
+    cost_usd: float = Field(default=0, ge=0)
     repair_attempts: int = Field(default=0, ge=0)
     trace_id: str | None = None
 

@@ -15,6 +15,12 @@
           "default": null,
           "title": "Agent Name"
         },
+        "cost_usd": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cost Usd",
+          "type": "number"
+        },
         "latency_ms": {
           "default": 0,
           "minimum": 0,

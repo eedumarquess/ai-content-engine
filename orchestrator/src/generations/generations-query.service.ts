@@ -15,12 +15,14 @@ import {
 import {
   isGenerationStatusDto,
   isGenerationStepStatusDto,
+  type GenerationExecutionMetricsDto,
   type GenerationStatusDto,
   type GenerationStepSummaryDto,
   type GetGenerationResponseDto,
   type PipelineStepNameDto,
 } from './dto/get-generation-response.dto';
 import { GenerationsRepository } from './generations.repository';
+import { normalizeWorkerReplyMetadata } from '../rabbit/rabbit.types';
 
 @Injectable()
 export class GenerationsQueryService {
@@ -100,6 +102,7 @@ export class GenerationsQueryService {
         : null;
     const errors =
       status === 'failed' ? this.extractFailureErrors(generation.error_json) : [];
+    const steps = this.buildStepSummaries(pipeline, stepRows);
 
     return this.contractsService.ensureGetGenerationResponse({
       generation_id: generation.id,
@@ -121,7 +124,8 @@ export class GenerationsQueryService {
           generation.completed_at,
           'metadata.completed_at',
         ),
-        steps: this.buildStepSummaries(pipeline, stepRows),
+        steps,
+        metrics: this.buildExecutionMetrics(steps),
       },
     });
   }
@@ -148,15 +152,64 @@ export class GenerationsQueryService {
           name: stepName,
           status: 'queued',
           attempt_count: 0,
+          agent_name: null,
+          model: null,
+          prompt_version: null,
+          tokens_in: 0,
+          tokens_out: 0,
+          latency_ms: 0,
+          cost_usd: 0,
+          repair_attempts: 0,
+          trace_id: null,
         };
       }
+
+      const replyMetadata = this.parseStepReplyMetadata(stepRow.reply_metadata);
 
       return {
         name: stepName,
         status: stepRow.status,
         attempt_count: stepRow.attempt_count,
+        agent_name: replyMetadata.agent_name,
+        model: replyMetadata.model,
+        prompt_version: replyMetadata.prompt_version,
+        tokens_in: replyMetadata.tokens_in,
+        tokens_out: replyMetadata.tokens_out,
+        latency_ms: replyMetadata.latency_ms,
+        cost_usd: replyMetadata.cost_usd,
+        repair_attempts: replyMetadata.repair_attempts,
+        trace_id: replyMetadata.trace_id,
       };
     });
+  }
+
+  private buildExecutionMetrics(
+    steps: GenerationStepSummaryDto[],
+  ): GenerationExecutionMetricsDto {
+    return steps.reduce<GenerationExecutionMetricsDto>(
+      (accumulator, step) => ({
+        total_tokens_in: accumulator.total_tokens_in + step.tokens_in,
+        total_tokens_out: accumulator.total_tokens_out + step.tokens_out,
+        total_latency_ms: accumulator.total_latency_ms + step.latency_ms,
+        total_cost_usd: roundMetric(accumulator.total_cost_usd + step.cost_usd),
+        total_repair_attempts:
+          accumulator.total_repair_attempts + step.repair_attempts,
+        completed_steps:
+          accumulator.completed_steps + (step.status === 'completed' ? 1 : 0),
+        failed_steps:
+          accumulator.failed_steps +
+          (step.status === 'failed' || step.status === 'dlq' ? 1 : 0),
+      }),
+      {
+        total_tokens_in: 0,
+        total_tokens_out: 0,
+        total_latency_ms: 0,
+        total_cost_usd: 0,
+        total_repair_attempts: 0,
+        completed_steps: 0,
+        failed_steps: 0,
+      },
+    );
   }
 
   private parsePipelineStepNames(value: unknown): PipelineStepNameDto[] {
@@ -229,4 +282,18 @@ export class GenerationsQueryService {
       createApiError('internal_error', message, field),
     ]);
   }
+
+  private parseStepReplyMetadata(replyMetadata: unknown) {
+    return normalizeWorkerReplyMetadata(
+      isRecord(replyMetadata) ? replyMetadata : {},
+    );
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function roundMetric(value: number): number {
+  return Number(value.toFixed(6));
 }

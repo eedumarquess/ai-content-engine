@@ -155,6 +155,7 @@ class WorkerResultTests(unittest.TestCase):
 
         self.assertTrue(success["ok"])
         self.assertEqual(success["reply_metadata"]["agent_name"], "content")
+        self.assertEqual(success["reply_metadata"]["cost_usd"], 0)
         self.assertFalse(failure["ok"])
         self.assertEqual(failure["error_json"]["errors"][0]["trace_id"], "trace-1")
 

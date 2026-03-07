@@ -9,7 +9,7 @@ from typing import Any, Protocol
 from pydantic import ValidationError
 
 from shared.contracts import ApiError, ApiErrorResponse, GenerationDocumentV1
-from shared.llm import LlmGenerationResult
+from shared.llm import LlmGenerationResult, estimate_cost_usd
 from shared.prompts import PromptLoader
 from shared.rabbit import WorkerExecutionResult
 from shared.repair import RepairExhaustedError, RepairService, parse_json_payload
@@ -220,6 +220,12 @@ class ReviewStepHandler:
                 GenerationDocumentV1,
                 context=repair_context,
             )
+            estimated_cost = estimate_cost_usd(
+                llm_response.provider,
+                request.config.model,
+                tokens_in=llm_response.prompt_tokens,
+                tokens_out=llm_response.completion_tokens,
+            )
             finalized_document = finalize_review_document(
                 repair_outcome.model,
                 request,
@@ -242,7 +248,12 @@ class ReviewStepHandler:
                 tokens_in=llm_response.prompt_tokens,
                 tokens_out=llm_response.completion_tokens,
                 latency_ms=llm_response.total_duration_ms,
+                cost_usd=estimated_cost,
                 output_json=output_json,
+                error_json=_build_repair_trace_error_json(
+                    raw_output=llm_response.text,
+                    repair_attempts=repair_outcome.repair_attempts,
+                ),
             )
             await self.trace_writer.write(trace_record)
             return WorkerExecutionResult.success(
@@ -250,11 +261,18 @@ class ReviewStepHandler:
                 reply_metadata=self._build_reply_metadata(
                     request=request,
                     llm_response=llm_response,
+                    cost_usd=float(estimated_cost),
                     repair_attempts=repair_outcome.repair_attempts,
                 ),
             )
         except RepairExhaustedError as error:
             partial_output = _extract_partial_output(error.raw_output)
+            estimated_cost = estimate_cost_usd(
+                llm_response.provider,
+                request.config.model,
+                tokens_in=llm_response.prompt_tokens,
+                tokens_out=llm_response.completion_tokens,
+            )
             trace_record = LlmTraceRecord(
                 generation_id=request.generation_id,
                 step_name="review",
@@ -268,10 +286,12 @@ class ReviewStepHandler:
                 tokens_in=llm_response.prompt_tokens,
                 tokens_out=llm_response.completion_tokens,
                 latency_ms=llm_response.total_duration_ms,
+                cost_usd=estimated_cost,
                 output_json=partial_output,
                 error_json={
                     "code": "repair_exhausted",
                     "message": str(error),
+                    "raw_output": error.raw_output,
                     "validation_errors": error.errors,
                 },
             )
@@ -291,6 +311,7 @@ class ReviewStepHandler:
                 reply_metadata=self._build_reply_metadata(
                     request=request,
                     llm_response=llm_response,
+                    cost_usd=float(estimated_cost),
                     repair_attempts=error.attempts,
                 ),
             )
@@ -324,6 +345,7 @@ class ReviewStepHandler:
         *,
         request: StepRpcRequest,
         llm_response: LlmGenerationResult | None = None,
+        cost_usd: float = 0,
         repair_attempts: int,
     ) -> WorkerReplyMetadata:
         return WorkerReplyMetadata(
@@ -334,6 +356,7 @@ class ReviewStepHandler:
             tokens_in=llm_response.prompt_tokens if llm_response is not None else 0,
             tokens_out=llm_response.completion_tokens if llm_response is not None else 0,
             latency_ms=llm_response.total_duration_ms if llm_response is not None else 0,
+            cost_usd=cost_usd,
             repair_attempts=repair_attempts,
             trace_id=str(request.generation_id),
         )
@@ -364,3 +387,18 @@ def _extract_partial_output(raw_output: str) -> dict[str, Any] | None:
         return parse_json_payload(raw_output)
     except ValueError:
         return None
+
+
+def _build_repair_trace_error_json(
+    *,
+    raw_output: str,
+    repair_attempts: int,
+) -> dict[str, Any] | None:
+    if repair_attempts <= 0:
+        return None
+
+    return {
+        "code": "repair_applied",
+        "raw_output": raw_output,
+        "repair_attempts": repair_attempts,
+    }

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Literal
@@ -151,6 +152,43 @@ class GenerationStepSummary(ContractModel):
     name: PipelineStepName
     status: GenerationStepStatus
     attempt_count: int = Field(ge=0)
+    agent_name: str | None
+    model: str | None
+    prompt_version: str | None
+    tokens_in: int = Field(ge=0)
+    tokens_out: int = Field(ge=0)
+    latency_ms: int = Field(ge=0)
+    cost_usd: Decimal = Field(ge=0)
+    repair_attempts: int = Field(ge=0)
+    trace_id: str | None
+
+    @model_validator(mode="before")
+    @classmethod
+    def populate_optional_fields(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+
+        normalized = dict(value)
+        normalized.setdefault("agent_name", None)
+        normalized.setdefault("model", None)
+        normalized.setdefault("prompt_version", None)
+        normalized.setdefault("tokens_in", 0)
+        normalized.setdefault("tokens_out", 0)
+        normalized.setdefault("latency_ms", 0)
+        normalized.setdefault("cost_usd", Decimal("0"))
+        normalized.setdefault("repair_attempts", 0)
+        normalized.setdefault("trace_id", None)
+        return normalized
+
+
+class GenerationExecutionMetrics(ContractModel):
+    total_tokens_in: int = Field(ge=0)
+    total_tokens_out: int = Field(ge=0)
+    total_latency_ms: int = Field(ge=0)
+    total_cost_usd: Decimal = Field(ge=0)
+    total_repair_attempts: int = Field(ge=0)
+    completed_steps: int = Field(ge=0)
+    failed_steps: int = Field(ge=0)
 
 
 class GenerationExecutionMetadata(ContractModel):
@@ -160,6 +198,7 @@ class GenerationExecutionMetadata(ContractModel):
     started_at: datetime | None
     completed_at: datetime | None
     steps: list[GenerationStepSummary]
+    metrics: GenerationExecutionMetrics
 
     @model_validator(mode="before")
     @classmethod

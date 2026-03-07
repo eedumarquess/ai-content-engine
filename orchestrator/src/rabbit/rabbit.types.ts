@@ -37,6 +37,7 @@ export type WorkerReplyMetadata = {
   tokens_in: number;
   tokens_out: number;
   latency_ms: number;
+  cost_usd: number;
   repair_attempts: number;
   trace_id: string | null;
 };
@@ -102,6 +103,7 @@ export function normalizeWorkerReplyMetadata(
     tokens_in: toNonNegativeInteger(value.tokens_in),
     tokens_out: toNonNegativeInteger(value.tokens_out),
     latency_ms: toNonNegativeInteger(value.latency_ms),
+    cost_usd: toNonNegativeNumber(value.cost_usd),
     repair_attempts: toNonNegativeInteger(value.repair_attempts),
     trace_id: typeof value.trace_id === 'string' ? value.trace_id : null,
   };
@@ -111,6 +113,12 @@ function toNonNegativeInteger(value: unknown): number {
   return typeof value === 'number' &&
     Number.isInteger(value) &&
     value >= 0
+    ? value
+    : 0;
+}
+
+function toNonNegativeNumber(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
     ? value
     : 0;
 }

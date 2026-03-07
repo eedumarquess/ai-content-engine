@@ -53,6 +53,25 @@ export type GenerationStepSummaryDto = {
   name: PipelineStepNameDto;
   status: GenerationStepStatusDto;
   attempt_count: number;
+  agent_name: string | null;
+  model: string | null;
+  prompt_version: string | null;
+  tokens_in: number;
+  tokens_out: number;
+  latency_ms: number;
+  cost_usd: number;
+  repair_attempts: number;
+  trace_id: string | null;
+};
+
+export type GenerationExecutionMetricsDto = {
+  total_tokens_in: number;
+  total_tokens_out: number;
+  total_latency_ms: number;
+  total_cost_usd: number;
+  total_repair_attempts: number;
+  completed_steps: number;
+  failed_steps: number;
 };
 
 export type GenerationExecutionMetadataDto = {
@@ -62,6 +81,7 @@ export type GenerationExecutionMetadataDto = {
   started_at: string | null;
   completed_at: string | null;
   steps: GenerationStepSummaryDto[];
+  metrics: GenerationExecutionMetricsDto;
 };
 
 export type GetGenerationResponseDto = {

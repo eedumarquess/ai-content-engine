@@ -410,6 +410,8 @@ Status: concluido na implementacao atual, com endpoint autenticado `POST /perfor
 
 Versionar prompts desde a primeira entrega para permitir rastreabilidade real.
 
+Status: concluido na implementacao atual, com prompts versionados em arquivo para `content_agent`, `review_agent` e `repair`, carregamento por `PromptLoader` e `prompt_version` propagado em RPC, traces e metadados de resposta.
+
 #### Entregaveis
 
 - estrutura `prompts/<agent>/v1.jinja`
@@ -418,10 +420,10 @@ Versionar prompts desde a primeira entrega para permitir rastreabilidade real.
 
 #### Passos
 
-- [ ] mover prompts para arquivos template
-- [ ] padronizar secoes `system`, `instructions`, `context` e `output_schema`
-- [ ] registrar `prompt_version` em toda chamada
-- [ ] incluir `repair_v1.jinja`
+- [x] mover prompts para arquivos template
+- [x] padronizar secoes `system`, `instructions`, `context` e `output_schema`
+- [x] registrar `prompt_version` em toda chamada
+- [x] incluir `repair_v1.jinja`
 
 #### Criterio de pronto
 
@@ -434,6 +436,8 @@ Versionar prompts desde a primeira entrega para permitir rastreabilidade real.
 
 Garantir robustez contra JSON invalido ou campos obrigatorios vazios.
 
+Status: concluido na implementacao atual, com `RepairService` acionado em `content_agent` e `review_agent`, ate 3 tentativas com `qwen2.5:3b`, revalidacao a cada ciclo e persistencia do bruto invalido em `llm_traces.error_json.raw_output`.
+
 #### Entregaveis
 
 - prompt de repair
@@ -442,13 +446,13 @@ Garantir robustez contra JSON invalido ou campos obrigatorios vazios.
 
 #### Passos
 
-- [ ] validar a saida com Pydantic v2
-- [ ] disparar repair para JSON invalido
-- [ ] disparar repair para campos obrigatorios vazios
-- [ ] usar `qwen2.5:3b` como modelo de repair
-- [ ] revalidar a cada tentativa
-- [ ] persistir o output bruto invalido
-- [ ] marcar step como `failed` e enviar para DLQ apos 3 falhas
+- [x] validar a saida com Pydantic v2
+- [x] disparar repair para JSON invalido
+- [x] disparar repair para campos obrigatorios vazios
+- [x] usar `qwen2.5:3b` como modelo de repair
+- [x] revalidar a cada tentativa
+- [x] persistir o output bruto invalido
+- [x] marcar step como `failed` e enviar para DLQ apos 3 falhas
 
 #### Criterio de pronto
 
@@ -461,6 +465,8 @@ Garantir robustez contra JSON invalido ou campos obrigatorios vazios.
 
 Fechar a observabilidade tecnica do MVP com dados suficientes para portfolio e evolucao operacional.
 
+Status: concluido na implementacao atual, com traces persistidos por step, agregacao de custo em `generation_costs`, `reply_metadata` enriquecido com custo/repair/latencia, campos prontos para OpenTelemetry e exposicao de metricas no `GET /generations/:id`.
+
 #### Entregaveis
 
 - persistencia em `llm_traces`
@@ -469,7 +475,7 @@ Fechar a observabilidade tecnica do MVP com dados suficientes para portfolio e e
 
 #### Passos
 
-- [ ] registrar:
+- [x] registrar:
   - `generation_id`
   - `step_name`
   - `agent_name`
@@ -486,9 +492,9 @@ Fechar a observabilidade tecnica do MVP com dados suficientes para portfolio e e
   - `output_json`
   - `error_json`
   - `created_at`
-- [ ] atualizar `generation_costs` apos cada chamada
-- [ ] incluir identificadores preparados para integracao com OpenTelemetry
-- [ ] expor metricas de sucesso, repair e latencia em nivel de geracao e step
+- [x] atualizar `generation_costs` apos cada chamada
+- [x] incluir identificadores preparados para integracao com OpenTelemetry
+- [x] expor metricas de sucesso, repair e latencia em nivel de geracao e step
 
 #### Criterio de pronto
 
@@ -501,6 +507,8 @@ Fechar a observabilidade tecnica do MVP com dados suficientes para portfolio e e
 
 Validar o fluxo completo com a arquitetura real do MVP.
 
+Status: concluido na implementacao atual, com teste integrado automatizado cobrindo ACK de geracao, execucao do pipeline `content -> review`, consulta do resultado final, exposicao de metricas por step e ingestao de `performance-event`.
+
 #### Entregaveis
 
 - demo funcional
@@ -509,15 +517,15 @@ Validar o fluxo completo com a arquitetura real do MVP.
 
 #### Passos
 
-- [ ] autenticar um usuario de teste
-- [ ] criar uma geracao via `POST /generate-content`
-- [ ] confirmar ACK com `generation_id`
-- [ ] acompanhar `GET /generations/:id` ate `completed`
-- [ ] confirmar `generation_steps` com `content` e `review`
-- [ ] confirmar `llm_traces` com retrieval, prompt e custo
-- [ ] confirmar `generation_costs`
-- [ ] registrar pelo menos um `performance_event`
-- [ ] montar um caso de demo para portfolio
+- [x] autenticar um usuario de teste
+- [x] criar uma geracao via `POST /generate-content`
+- [x] confirmar ACK com `generation_id`
+- [x] acompanhar `GET /generations/:id` ate `completed`
+- [x] confirmar `generation_steps` com `content` e `review`
+- [x] confirmar `llm_traces` com retrieval, prompt e custo
+- [x] confirmar `generation_costs`
+- [x] registrar pelo menos um `performance_event`
+- [x] montar um caso de demo para portfolio
 
 #### Criterio de pronto
 
@@ -541,32 +549,32 @@ Validar o fluxo completo com a arquitetura real do MVP.
 
 ### Bloco 3 - Robustez e memoria
 
-- [ ] Parte 8 - Ingestao de `performance_memory`
-- [ ] Parte 9 - Prompt versioning
-- [ ] Parte 10 - Repair loop
-- [ ] Parte 11 - Tracing, custo e OpenTelemetry readiness
+- [x] Parte 8 - Ingestao de `performance_memory`
+- [x] Parte 9 - Prompt versioning
+- [x] Parte 10 - Repair loop
+- [x] Parte 11 - Tracing, custo e OpenTelemetry readiness
 
 ### Bloco 4 - Validacao final
 
-- [ ] Parte 12 - Integracao ponta a ponta e demo
+- [x] Parte 12 - Integracao ponta a ponta e demo
 
 ## 7. Definition of Done do MVP
 
 O MVP sera considerado concluido quando todos os pontos abaixo estiverem verdadeiros:
 
-- [ ] `POST /generate-content` retorna `generation_id` e nao bloqueia esperando os agents
-- [ ] `GET /generations/:id` expone status, resultado e erros estruturados
-- [ ] existe autenticacao basica e isolamento por usuario
-- [ ] o pipeline `content -> review` executa via RabbitMQ com RPC interno
-- [ ] cada step tem retry de ate 3 tentativas e DLQ em caso de falha final
-- [ ] `content_agent` e `review_agent` usam retrieval + rerank
-- [ ] o schema global versionado e validado por Pydantic e pelo NestJS
-- [ ] o repair loop tenta corrigir JSON invalido ou campos obrigatorios vazios
-- [ ] `generation_steps` guarda entradas, saidas, tentativas e erros por step
-- [ ] `llm_traces` guarda prompt, retrieval, tokens, custo, latencia e output
-- [ ] `generation_costs` consolida o custo total da geracao
-- [ ] `POST /performance-events` aceita e persiste eventos de performance
-- [ ] prompts ficam versionados no repositorio
+- [x] `POST /generate-content` retorna `generation_id` e nao bloqueia esperando os agents
+- [x] `GET /generations/:id` expone status, resultado e erros estruturados
+- [x] existe autenticacao basica e isolamento por usuario
+- [x] o pipeline `content -> review` executa via RabbitMQ com RPC interno
+- [x] cada step tem retry de ate 3 tentativas e DLQ em caso de falha final
+- [x] `content_agent` e `review_agent` usam retrieval + rerank
+- [x] o schema global versionado e validado por Pydantic e pelo NestJS
+- [x] o repair loop tenta corrigir JSON invalido ou campos obrigatorios vazios
+- [x] `generation_steps` guarda entradas, saidas, tentativas e erros por step
+- [x] `llm_traces` guarda prompt, retrieval, tokens, custo, latencia e output
+- [x] `generation_costs` consolida o custo total da geracao
+- [x] `POST /performance-events` aceita e persiste eventos de performance
+- [x] prompts ficam versionados no repositorio
 
 ## 8. Backlog imediato apos o MVP
 

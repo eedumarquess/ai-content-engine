@@ -83,7 +83,17 @@ describe('GenerationsQueryService', () => {
             input_json: {},
             output_json: {},
             error_json: null,
-            reply_metadata: {},
+            reply_metadata: {
+              agent_name: 'content',
+              model: 'qwen2.5:7b',
+              prompt_version: 'v1',
+              tokens_in: 111,
+              tokens_out: 222,
+              latency_ms: 333,
+              cost_usd: 0,
+              repair_attempts: 0,
+              trace_id: 'trace-content',
+            },
             started_at: null,
             finished_at: null,
           },
@@ -96,7 +106,17 @@ describe('GenerationsQueryService', () => {
             input_json: {},
             output_json: {},
             error_json: null,
-            reply_metadata: {},
+            reply_metadata: {
+              agent_name: 'review',
+              model: 'qwen2.5:7b',
+              prompt_version: 'v1',
+              tokens_in: 120,
+              tokens_out: 180,
+              latency_ms: 444,
+              cost_usd: 0,
+              repair_attempts: 1,
+              trace_id: 'trace-review',
+            },
             started_at: null,
             finished_at: null,
           },
@@ -117,6 +137,10 @@ describe('GenerationsQueryService', () => {
     assert.equal(response.errors.length, 0);
     assert.equal(response.metadata.steps.length, 2);
     assert.equal(response.metadata.steps[0]?.status, 'completed');
+    assert.equal(response.metadata.steps[0]?.latency_ms, 333);
+    assert.equal(response.metadata.steps[1]?.repair_attempts, 1);
+    assert.equal(response.metadata.metrics.total_tokens_in, 231);
+    assert.equal(response.metadata.metrics.total_latency_ms, 777);
     assert.equal(response.result?.metadata.schema_version, 'v1');
   });
 
@@ -165,7 +189,17 @@ describe('GenerationsQueryService', () => {
             input_json: {},
             output_json: null,
             error_json: null,
-            reply_metadata: {},
+            reply_metadata: {
+              agent_name: 'content',
+              model: 'qwen2.5:7b',
+              prompt_version: 'v1',
+              tokens_in: 10,
+              tokens_out: 20,
+              latency_ms: 30,
+              cost_usd: 0,
+              repair_attempts: 0,
+              trace_id: 'trace-running',
+            },
             started_at: null,
             finished_at: null,
           },
@@ -200,6 +234,8 @@ describe('GenerationsQueryService', () => {
     assert.deepEqual(response.errors, []);
     assert.equal(response.metadata.started_at, '2026-03-05T20:00:05.000Z');
     assert.equal(response.metadata.completed_at, null);
+    assert.equal(response.metadata.metrics.completed_steps, 0);
+    assert.equal(response.metadata.metrics.failed_steps, 0);
   });
 
   it('falls back to an internal error when the stored failure payload is invalid', async () => {
@@ -254,7 +290,17 @@ describe('GenerationsQueryService', () => {
             input_json: {},
             output_json: null,
             error_json: {},
-            reply_metadata: {},
+            reply_metadata: {
+              agent_name: 'content',
+              model: 'qwen2.5:7b',
+              prompt_version: 'v1',
+              tokens_in: 50,
+              tokens_out: 60,
+              latency_ms: 70,
+              cost_usd: 0,
+              repair_attempts: 3,
+              trace_id: 'trace-failed',
+            },
             started_at: null,
             finished_at: null,
           },
@@ -294,5 +340,6 @@ describe('GenerationsQueryService', () => {
         trace_id: null,
       },
     ]);
+    assert.equal(response.metadata.metrics.failed_steps, 2);
   });
 });

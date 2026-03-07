@@ -144,6 +144,38 @@ class SchemaExportTests(unittest.TestCase):
                 "started_at",
                 "completed_at",
                 "steps",
+                "metrics",
+            },
+        )
+        step_summary = status_defs["GenerationStepSummary"]
+        metrics = status_defs["GenerationExecutionMetrics"]
+        self.assertEqual(
+            set(step_summary["required"]),
+            {
+                "name",
+                "status",
+                "attempt_count",
+                "agent_name",
+                "model",
+                "prompt_version",
+                "tokens_in",
+                "tokens_out",
+                "latency_ms",
+                "cost_usd",
+                "repair_attempts",
+                "trace_id",
+            },
+        )
+        self.assertEqual(
+            set(metrics["required"]),
+            {
+                "total_tokens_in",
+                "total_tokens_out",
+                "total_latency_ms",
+                "total_cost_usd",
+                "total_repair_attempts",
+                "completed_steps",
+                "failed_steps",
             },
         )
         self.assertEqual(
