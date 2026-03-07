@@ -1,59 +1,136 @@
 # Commits da worktree – ordem e assuntos
 
-Ordem alinhada ao **plano de ação do MVP** (`docs/plano-de-acao-mvp.md`). Use o script `commit-worktree.ps1` para aplicar todos de uma vez, ou copie os comandos abaixo para fazer manualmente.
+Ordem por **assunto** e **dependência** (schemas → módulos → shared __init__ → testes → scripts). Use o script `commit-worktree.ps1` para aplicar todos de uma vez, ou copie os comandos abaixo para fazer manualmente.
 
 ---
 
-## 1. Contrato global e schemas v1 (Parte 3)
+## 1. Schemas shared v1
 
-**Assunto:** Schema global versionado, request/response, validação (agents + orchestrator).
+**Assunto:** Base da camada shared – tipos comuns, retrieval, trace, worker e schemas JSON gerados.
 
 ```powershell
-git add agents/shared/contracts/generation_v1.py agents/tests/test_contracts.py orchestrator/src/contracts/contracts.service.ts orchestrator/src/contracts/contracts.service.test.ts orchestrator/src/contracts/generated/generation-document.v1.schema.json orchestrator/src/contracts/generated/generation-status.response.v1.schema.json
-git commit -m "feat(contracts): schema global v1, request/response e validacao (agents + orchestrator)"
+git add agents/shared/schemas/__init__.py agents/shared/schemas/common.py agents/shared/schemas/retrieval_v1.py agents/shared/schemas/trace_v1.py agents/shared/schemas/worker_v1.py agents/shared/schemas/export_json_schemas.py agents/shared/schemas/generated/llm-trace-record.v1.schema.json agents/shared/schemas/generated/retrieval-filters.v1.schema.json agents/shared/schemas/generated/retrieved-document.v1.schema.json agents/shared/schemas/generated/step-rpc.failure-reply.v1.schema.json agents/shared/schemas/generated/step-rpc.request.v1.schema.json agents/shared/schemas/generated/step-rpc.success-reply.v1.schema.json
+git commit -m "feat(agents): schemas shared v1 (common, retrieval, trace, worker, generated JSON)"
 ```
 
 ---
 
-## 2. Endpoints generations (Parte 3/4)
+## 2. Dependências agents
 
-**Assunto:** DTOs e testes para `POST /generate-content` e `GET /generations/:id`.
+**Assunto:** Dependências do projeto agents (pyproject.toml).
 
 ```powershell
-git add orchestrator/src/generations/dto/api-error-response.dto.ts orchestrator/src/generations/dto/generate-content-request.dto.ts orchestrator/src/generations/generations.controller.test.ts orchestrator/src/generations/generations.service.test.ts
-git commit -m "feat(generations): DTOs e testes para POST /generate-content e GET /generations/:id"
+git add agents/pyproject.toml
+git commit -m "chore(agents): dependencias pyproject (aio-pika, httpx, jinja2, sentence-transformers, etc.)"
 ```
 
 ---
 
-## 3. Documentação (plano de ação MVP e parte 3)
+## 3. LLM client e pricing
 
-**Assunto:** Plano de ação do MVP, README e alterações da parte 3.
+**Assunto:** Cliente LLM shared e tabela de pricing.
 
 ```powershell
-git add docs/plano-de-acao-mvp.md docs/README.md docs/parte-3-alteracoes.md
-git commit -m "docs: plano de acao MVP, README e alteracoes da parte 3"
+git add agents/shared/llm/__init__.py agents/shared/llm/client.py agents/shared/llm/pricing.py
+git commit -m "feat(agents): shared LLM client e pricing"
 ```
 
 ---
 
-## 4. Scripts (commit worktree)
+## 4. RAG shared
 
-**Assunto:** Script de commits da worktree e documentação.
+**Assunto:** Embedder, retriever e reranker na camada shared.
+
+```powershell
+git add agents/shared/rag/__init__.py agents/shared/rag/embedder.py agents/shared/rag/retriever.py agents/shared/rag/reranker.py
+git commit -m "feat(agents): shared RAG embedder, retriever e reranker"
+```
+
+---
+
+## 5. Prompts shared e template repair
+
+**Assunto:** Loader de prompts e template Jinja para repair.
+
+```powershell
+git add agents/shared/prompts/__init__.py agents/shared/prompts/loader.py agents/prompts/repair/repair_v1.jinja
+git commit -m "feat(agents): prompt loader e template repair v1"
+```
+
+---
+
+## 6. Repair service
+
+**Assunto:** Serviço de validação e reparo de saída (retry com LLM).
+
+```powershell
+git add agents/shared/repair/__init__.py agents/shared/repair/repair.py
+git commit -m "feat(agents): repair service para validacao e reparo de saida"
+```
+
+---
+
+## 7. Rabbit RPC worker
+
+**Assunto:** Worker RPC sobre RabbitMQ na camada shared.
+
+```powershell
+git add agents/shared/rabbit/__init__.py agents/shared/rabbit/worker.py
+git commit -m "feat(agents): shared Rabbit RPC worker"
+```
+
+---
+
+## 8. Tracing shared
+
+**Assunto:** Escrita de traces (trace writer).
+
+```powershell
+git add agents/shared/tracing/__init__.py agents/shared/tracing/trace_writer.py
+git commit -m "feat(agents): shared trace writer"
+```
+
+---
+
+## 9. Shared __init__ exports
+
+**Assunto:** `agents/shared/__init__.py` com exports da camada.
+
+```powershell
+git add agents/shared/__init__.py
+git commit -m "feat(agents): shared __init__ com exports da camada"
+```
+
+---
+
+## 10. Testes shared layer
+
+**Assunto:** Testes da camada shared.
+
+```powershell
+git add agents/tests/test_shared_layer.py
+git commit -m "test(agents): testes da camada shared"
+```
+
+---
+
+## 11. Scripts worktree
+
+**Assunto:** Script de commits da worktree e esta documentação.
 
 ```powershell
 git add scripts/commit-worktree.ps1 scripts/COMMITS-WORKTREE.md
-git commit -m "chore(scripts): script de commits da worktree e documentacao"
+git commit -m "chore(scripts): script de commits da worktree por assunto e COMMITS-WORKTREE.md"
 ```
 
 ---
 
 ## Uso do script
 
-- **Executar todos os commits:**  
+- **Executar todos os commits (na ordem acima):**  
   `.\scripts\commit-worktree.ps1`
 
 - **Simular (não commitar):**  
   `$env:DRY_RUN="1"; .\scripts\commit-worktree.ps1`
 
-Execute a partir da raiz do repositório.
+Execute a partir da **raiz do repositório**.
