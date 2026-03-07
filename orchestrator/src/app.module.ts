@@ -8,6 +8,7 @@ import { DatabaseModule } from './database/database.module';
 import { GenerationsModule } from './generations/generations.module';
 import { HealthController } from './health/health.controller';
 import { HealthService } from './health/health.service';
+import { PerformanceEventsModule } from './performance-events/performance-events.module';
 import { PipelineModule } from './pipeline/pipeline.module';
 import { RabbitModule } from './rabbit/rabbit.module';
 
@@ -23,6 +24,7 @@ import { RabbitModule } from './rabbit/rabbit.module';
     RabbitModule,
     PipelineModule,
     GenerationsModule,
+    PerformanceEventsModule,
   ],
   controllers: [HealthController],
   providers: [HealthService],

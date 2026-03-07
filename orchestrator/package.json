@@ -10,7 +10,7 @@
     "db:seed": "node dist/database/cli/seed.js",
     "db:bootstrap": "node dist/database/cli/bootstrap.js",
     "db:verify": "node dist/database/cli/verify.js",
-    "test": "corepack pnpm build && node --test dist/contracts/contracts.service.test.js dist/auth/auth.service.test.js dist/generations/generate.controller.test.js dist/generations/generate.service.test.js dist/generations/generations.controller.test.js dist/generations/generations-query.service.test.js dist/pipeline/pipeline-executor.test.js dist/pipeline/pipeline-recovery.service.test.js",
+    "test": "corepack pnpm build && node --test dist/contracts/contracts.service.test.js dist/auth/auth.service.test.js dist/generations/generate.controller.test.js dist/generations/generate.service.test.js dist/generations/generations.controller.test.js dist/generations/generations-query.service.test.js dist/performance-events/performance-events.controller.test.js dist/performance-events/performance-events.service.test.js dist/pipeline/pipeline-executor.test.js dist/pipeline/pipeline-recovery.service.test.js",
     "start": "node dist/main.js",
     "start:prod": "node dist/main.js"
   },

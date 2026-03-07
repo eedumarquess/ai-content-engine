@@ -378,6 +378,8 @@ Status: concluido na implementacao atual, com `ReviewStepHandler`, prompts versi
 
 Incluir a memoria de performance no MVP sem expandir demais o retrieval inicial.
 
+Status: concluido na implementacao atual, com endpoint autenticado `POST /performance-events`, persistencia em `performance_events`, validacao estruturada de metricas e projecao canonica pronta para futura ingestao em `rag_documents`.
+
 #### Entregaveis
 
 - endpoint `POST /performance-events`
@@ -386,16 +388,16 @@ Incluir a memoria de performance no MVP sem expandir demais o retrieval inicial.
 
 #### Passos
 
-- [ ] criar endpoint autenticado de ingestao de performance
-- [ ] persistir eventos com `user_id`, `generation_id`, `platform` e `metrics`
-- [ ] definir formato minimo das metricas:
+- [x] criar endpoint autenticado de ingestao de performance
+- [x] persistir eventos com `user_id`, `generation_id`, `platform` e `metrics`
+- [x] definir formato minimo das metricas:
   - `likes`
   - `comments`
   - `shares`
   - `impressions`
   - `engagement_rate`
-- [ ] preparar mapeamento futuro para `rag_documents`
-- [ ] registrar em `metadata.performance_context_used` se houve uso dessa memoria
+- [x] preparar mapeamento futuro para `rag_documents`
+- [x] registrar em `metadata.performance_context_used` se houve uso dessa memoria
 
 #### Criterio de pronto
 
