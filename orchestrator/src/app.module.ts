@@ -8,6 +8,8 @@ import { DatabaseModule } from './database/database.module';
 import { GenerationsModule } from './generations/generations.module';
 import { HealthController } from './health/health.controller';
 import { HealthService } from './health/health.service';
+import { PipelineModule } from './pipeline/pipeline.module';
+import { RabbitModule } from './rabbit/rabbit.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { HealthService } from './health/health.service';
     AuthModule,
     ContractsModule,
     DatabaseModule,
+    RabbitModule,
+    PipelineModule,
     GenerationsModule,
   ],
   controllers: [HealthController],
