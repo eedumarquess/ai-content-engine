@@ -348,6 +348,8 @@ Status: concluido na implementacao atual, com `ContentStepHandler`, prompts vers
 
 Revisar a saida do `content_agent` sem mudar o objetivo do conteudo.
 
+Status: concluido na implementacao atual, com `ReviewStepHandler`, prompts versionados `v1` e `v2`, consumo do documento consolidado, retrieval com `persona/knowledge/performance`, rerank top 20 -> top 5, validacao do schema global, persistencia de trace/custo e integracao do worker RabbitMQ.
+
 #### Entregaveis
 
 - handler do `review_agent`
@@ -356,14 +358,14 @@ Revisar a saida do `content_agent` sem mudar o objetivo do conteudo.
 
 #### Passos
 
-- [ ] montar query com criterios de qualidade, plataforma e estilo
-- [ ] receber o documento global consolidado
-- [ ] recuperar contexto de revisao
-- [ ] aplicar rerank nos documentos recuperados
-- [ ] revisar clareza, formato e conformidade
-- [ ] devolver o documento inteiro no mesmo schema
-- [ ] validar a saida
-- [ ] persistir trace e custo estimado
+- [x] montar query com criterios de qualidade, plataforma e estilo
+- [x] receber o documento global consolidado
+- [x] recuperar contexto de revisao
+- [x] aplicar rerank nos documentos recuperados
+- [x] revisar clareza, formato e conformidade
+- [x] devolver o documento inteiro no mesmo schema
+- [x] validar a saida
+- [x] persistir trace e custo estimado
 
 #### Criterio de pronto
 
@@ -533,7 +535,7 @@ Validar o fluxo completo com a arquitetura real do MVP.
 - [x] Parte 4 - Orchestrator NestJS
 - [x] Parte 5 - Shared layer dos agents Python
 - [x] Parte 6 - `content_agent`
-- [ ] Parte 7 - `review_agent`
+- [x] Parte 7 - `review_agent`
 
 ### Bloco 3 - Robustez e memoria
 
