@@ -177,6 +177,60 @@ describe('PipelineExecutor', () => {
     ]);
   });
 
+
+  it('attempts a step once even when max_retries is configured as zero', async () => {
+    const generation = createGeneration();
+    generation.pipeline.steps[0].max_retries = 0;
+
+    let attempts = 0;
+    let generationFailed = false;
+    const repository = {
+      connect: async () =>
+        ({
+          release: () => undefined,
+        }) as never,
+      tryAcquireGenerationLock: async () => true,
+      releaseGenerationLock: async () => undefined,
+      findGenerationById: async () => generation,
+      markGenerationRunning: async () => undefined,
+      markStepRunning: async () => {
+        attempts += 1;
+      },
+      markStepFailed: async () => undefined,
+      markStepDlq: async () => undefined,
+      failGeneration: async () => {
+        generationFailed = true;
+      },
+    } as unknown as GenerationsRepository;
+    const rpcClient = {
+      sendRpc: async () => {
+        throw new Error('RPC timeout after 300000ms.');
+      },
+    } as unknown as RabbitRpcClient;
+    const dlqService = {
+      publishTerminalFailure: async () => undefined,
+    } as unknown as RabbitDlqService;
+    const executor = new PipelineExecutor(
+      {
+        getOrThrow: (key: string) => {
+          if (key === 'OLLAMA_MAIN_MODEL') {
+            return 'qwen2.5:7b';
+          }
+          throw new Error(`Unexpected config key ${key}`);
+        },
+      } as unknown as ConfigService,
+      new ContractsService(),
+      repository,
+      rpcClient,
+      dlqService,
+    );
+
+    await executor.execute(generation.id);
+
+    assert.equal(attempts, 1);
+    assert.equal(generationFailed, true);
+  });
+
   it('retries a failing step and sends it to DLQ after the third failure', async () => {
     const generation = createGeneration();
     let failedAttempts = 0;
