@@ -161,7 +161,7 @@ export class PipelineExecutor {
     stepDefinition: PipelinePresetStepDefinition,
     stepRecord: GenerationStepRecord,
   ): Promise<boolean> {
-    const maxAttempts = stepDefinition.max_retries;
+    const maxAttempts = Math.max(stepDefinition.max_retries, 1);
     let previousError: StepFailureContext | null =
       stepRecord.status === 'dlq'
         ? {
